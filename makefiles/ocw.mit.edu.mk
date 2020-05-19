@@ -23,7 +23,7 @@ tmp/${COURSE}.zip: tmp/${COURSE}
 
 
 # TODO this should be dynamic per course
-tmp/apts: tmp/recitations.txt tmp/labs.txt tmp/related-resources.txt tmp/exams.txt
+tmp/apts: ${COURSE_SECTIONS}
 	mkdir -p $@
 	sh makefiles/apts.sh $?
 	mv x* $@/

@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
 cat $@ \
-| grep -E -A 2 'Lab|Lecture|Exam|Questions' \
-| split -p '--'
-
+| tail -n +21 \
+| split -l 3
