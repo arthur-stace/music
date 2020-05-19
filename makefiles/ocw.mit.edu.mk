@@ -1,15 +1,11 @@
-.PHONY:
-
 OCW_ZIP_DOMAIN = https://ocw.mit.edu/ans15436/ZipForEndUsers
 
+default: apts
 
-apts: tmp/${COURSE}.zip
-	${MAKE} notes
+apts: notes/
 
-
-notes: tmp/notes
-	mkdir -p $@
-	mv $</* $@
+notes/:
+	for section in ${COURSE_SECTIONS}; do ${MAKE} tmp/$$section.txt; done
 
 
 tmp/${COURSE}:
@@ -22,22 +18,11 @@ tmp/${COURSE}.zip: tmp/${COURSE}
 	tar xf $@ -C $<
 
 
-# TODO this should be dynamic per course
-tmp/apts: ${COURSE_SECTIONS}
-	mkdir -p $@
-	sh makefiles/apts.sh $?
-	mv x* $@/
-
-
-tmp/notes: tmp/apts
-	mkdir -p $@
-	sh makefiles/notes.sh $^ $@ > apts
-
-
-tmp/%.txt:
-	cat tmp/${COURSE}/${COURSE}/contents/$*/index.htm \
+tmp/%.txt: tmp/${COURSE}.zip
+	cat tmp/${COURSE}/${COURSE}/contents/$(shell basename $* .txt)/index.htm \
 	| pup "#course_inner_section" \
-	| lynx -list_inline -dump -stdin > $@
+	| lynx -list_inline -dump -stdin \
+	| makefiles/ocw.mit.edu/${COURSE}/$(shell basename $* .txt).sh
 
 
 clean:
